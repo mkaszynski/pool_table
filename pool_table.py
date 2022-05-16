@@ -19,8 +19,8 @@ screen = pygame.display.set_mode([1200, 600])
 
 balls = [[700, 250, 0, 0, (255, 255, 255), None, False]]
 
-for i in range(10):
-    for j in range(10):
+for i in range(9):
+    for j in range(9):
         if i > j:
             if j % 2 == 0:
                 balls.append([j*25 + 100, i*25 + 150 - j*25*0.5, 0, 0, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), i + j - 2, False])
@@ -98,7 +98,9 @@ while running:
                     else:
                         i[0] = 700
                         i[1] = 250
-                        if not turn:
+                        i[2] = 0
+                        i[3] = 0
+                        if turn:
                             points1 -= 1
                         else:
                             points2 -= 1
@@ -166,6 +168,14 @@ while running:
 
     # Flip the display
     pygame.display.flip()
+
+if points1 > points2:
+    print('player 1 won')
+elif points1 < points2:
+    print('player 2 won')
+else:
+    print('players tied')
+    
 
 # Done! Time to quit.
 pygame.quit()
