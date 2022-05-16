@@ -17,16 +17,23 @@ font = pygame.font.Font("freesansbold.ttf", 24)
 # Set up the drawing window
 screen = pygame.display.set_mode([1200, 600])
 
-balls = [[700, 250, 0, 0, (255, 255, 255), None]]
+balls = [[700, 250, 0, 0, (255, 255, 255), None, False]]
 
-for i in range(5):
-    for j in range(5):
+for i in range(10):
+    for j in range(10):
         if i > j:
-            balls.append([j*25 + 100, i*25 + 200 - j*25*0.5, 0, 0, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), i + j - 2])
+            if j % 2 == 0:
+                balls.append([j*25 + 100, i*25 + 150 - j*25*0.5, 0, 0, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), i + j - 2, False])
+            else:
+                balls.append([j*25 + 100, i*25 + 150 - j*25*0.5, 0, 0, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), i + j - 2, True])
 
 angle = 0
 
-points = 0
+points1 = 0
+points2 = 0
+
+turn = False
+
 
 holes = [[0, 250], [570, 0], [1170, 570], [1170, 0], [570, 570], [0, 570], [1170, 250]]
 
@@ -72,18 +79,29 @@ while running:
                 if abs(i[2]) < 0.3 and abs(i[3]) < 0.3:
                     i[2] = math.sin(angle)*25
                     i[3] = math.cos(angle)*25
+                    turn = not turn
     
     for i in balls:
         for j in holes:
             if j[0] > i[0] - 30 and j[0] < i[0] + 20:
                 if j[1] > i[1] - 30 and j[1] < i[1] + 20:
                     if not i[4] == (255, 255, 255):
+                        if i[5] >= 0:
+                            if not i[6]:
+                                points1 += i[5]
+                            else:
+                                points2 += i[5]
+                        else:
+                            points1 += i[5]
+                            points2 += i[5]
                         balls.remove(i)
-                        points += i[5]
                     else:
                         i[0] = 700
                         i[1] = 250
-                        points -= 1
+                        if not turn:
+                            points1 -= 1
+                        else:
+                            points2 -= 1
     
     for i in balls:
         i[2] *= 0.975
@@ -123,11 +141,19 @@ while running:
             pygame.draw.rect(screen, i[4], map1)
         if not i[5] == None:
             if i[5] >= 0:
-                add_line(screen, str(i[5]), i[0], i[1])
+                if not i[6]:
+                    add_line(screen, str(i[5]), i[0], i[1], color=(0, 0, 0))
+                else:
+                    add_line(screen, str(i[5]), i[0], i[1], color=(200, 0, 0))
             else:
                 add_line(screen, str(i[5]), i[0], i[1], color=(255, 255, 255))
     
-    add_line(screen, f'points: {points}', 0, 0)
+    add_line(screen, f'points for person 1: {points1}', 0, 0)
+    add_line(screen, f'points for person 2: {points2}', 0, 45)
+    if not turn:
+        add_line(screen, 'person 1 turn', 0, 90)
+    else:
+        add_line(screen, 'person 2 turn', 0, 90)
     
     for i in balls:
         if abs(i[2]) < 0.3 and abs(i[3]) < 0.3:
